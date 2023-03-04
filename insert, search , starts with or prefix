@@ -1,0 +1,96 @@
+TRIES:
+
+struct Node{//trie ka box
+    //TRIE KE CONTENTS
+    Node *links[26];
+    bool flg=false;
+
+   // FUNCTIONS OF TRIE
+    bool containskey(char ch){
+        //trie me ch present or not
+        return (links[ch-'a']!=NULL);
+        //AGR NULL NHI H TOH RETURNS TRUE
+    }
+
+    void put(char ch,Node *node){//putting value in trie
+        links[ch-'a']=node;
+    }
+ 
+    Node* get(char ch){//move to reference trie
+        return links[ch-'a'];//return where is this pointing to
+    }
+    
+    void setend(){//set end of trie
+        flg=true;
+    }
+
+    bool isend(){
+        return flg;
+    }
+};
+
+class Trie {
+private: Node*root;
+public:
+
+    /** Initialize your data structure here. */
+    Trie() {
+        //creating new object
+     root= new Node();
+    }
+    
+    //////////////////////////////////////////////insert
+
+    /** Inserts a word into the trie. */
+    void insert(string word) {//TC=O(length of word)
+       Node* node = root;//dummy var pointing initially to root
+       int n=word.size();
+       for(int i=0;i<n;i++){
+           if(!node->containskey(word[i])){//fn=return links[ch-'a']!=NULL
+               //does not contain key
+               node->put(word[i],new Node());//contain krwado
+               //links[ch-'a']=node;
+           }
+           //else move to its reference trie
+           node=node->get(word[i]);//return links[ch-'a]
+           
+       }
+       //end pe ajao
+       node->setend();//set the end flg=true;
+    }
+
+/////////////////////////////////////////////search
+
+    /** Returns if the word is in the trie. */
+    bool search(string word) {
+       Node *node=root;
+       for(int i=0;i<word.size();i++){
+           if(!node->containskey(word[i])){//contain nhi krta
+            return false;
+           }
+           //else krta hai so move to next ref trie
+           node=node->get(word[i]);
+       }
+       return node->isend();//yaani word khtm hogyya ya nahi
+       //agr khtm hua means flg was true and thus our ans
+       //else ni hua khtm means flg is false//return flg   
+       
+    }
+    
+//////////////////////////////////////////prefix
+
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    bool startsWith(string prefix) {
+       Node *node=root;
+       for(int i=0;i<prefix.size();i++){
+           if(!node->containskey(prefix[i])){//contain nhi krta
+            return false;
+           }
+           //else krta hai so move to next ref trie
+           node=node->get(prefix[i]);
+       }
+       //agr yaha tk pohch paya means puri prefix is present
+       return true;
+
+    }
+};
