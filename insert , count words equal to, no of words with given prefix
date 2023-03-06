@@ -1,0 +1,101 @@
+#include <bits/stdc++.h> 
+struct Node{
+    Node * links[26];
+    int cntprefix=0;
+    int cntendwith=0;
+
+    bool containskey(char ch){
+        return (links[ch-'a']!=NULL);
+    }
+    void put(char ch, Node*node ){
+      links[ch-'a']=node;
+    }
+    Node * get(char ch){
+        return links[ch-'a'];
+    }
+    void increaseend(){
+        cntendwith++;
+    }
+    void increaseprefix(){
+        cntprefix++;
+    }
+    void deleteend(){
+        cntendwith--;
+    }
+    void removeprefix(){
+        cntprefix--;
+    }
+    int getend(){
+        return cntendwith;
+    }
+    int getprefix(){
+        return cntprefix;
+    }
+    
+};
+class Trie{
+    private: Node*root;
+    public:
+/////// tc = O(n)
+    Trie(){
+       root=new Node();
+    }
+/////////////////inc cp for every trie and ew if word ends
+        void insert(string &word){
+        Node*node=root;
+        for(int i=0;i<word.size();i++){
+            if(!node->containskey(word[i])){
+             node->put(word[i],new Node());//put krado
+            }
+           node=node->get(word[i]);//move to reference node
+           //after every char inc cp
+           node->increaseprefix();
+        }
+        //afer word completion inc ew
+        node->increaseend();
+    }
+//////////////////////ew gives ans
+    int countWordsEqualTo(string &word){
+        Node*node=root;
+        for(int i=0;i<word.size();i++){
+            if(node->containskey(word[i])){//if equal then move to next
+              node=node->get(word[i]);
+            }
+            else{//equal nhi h
+             return 0;
+            }
+        }//word end hogya aur kuch retur ni hua means hai toh sahi
+        //return kitne h by returning ew
+        //reached end
+        return node->getend();
+    }
+ ///////////////////// cp gives ans   
+    int countWordsStartingWith(string &word){
+        Node*node=root;
+        for(int i=0;i<word.size();i++){
+            if(node->containskey(word[i])){//if equal then move to next
+              node=node->get(word[i]);
+            }
+            else{//equal nhi h
+             return 0;
+            }
+        }
+        return node->getprefix();
+    }
+/////////////////////////////////////////erase word: reduce cp and ew(if ends)
+    void erase(string &word){
+        Node*node=root;
+        for(int i=0;i<word.size();i++){
+            if(node->containskey(word[i])){//if equal then move to next
+              node=node->get(word[i]);
+              // i am at its reference trie now
+              //so reduce cp of that (and ew if word ends)
+              node->removeprefix();
+            }
+            else{//word doesnt exist
+             return ;
+            }
+        }
+        node->deleteend();
+    }
+};
