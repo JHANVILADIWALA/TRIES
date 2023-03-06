@@ -1,0 +1,80 @@
+//https://www.codingninjas.com/codestudio/problems/complete-string_2687860?utm_source=youtube&utm_medium=affiliate&utm_campaign=striver_tries_videos
+
+#include <bits/stdc++.h> 
+struct Node{
+  Node*links[26];
+  bool flg=false;
+  bool containskey(char ch){
+      return (links[ch-'a']!=NULL);
+  }
+  Node*get(char ch){
+      return links[ch-'a'];
+  }
+  void put(char ch,Node*node){
+      links[ch-'a']=node;
+  }
+  void setend(){
+      flg=true;
+  }
+  bool isend(){
+      return flg;
+  }
+};
+class Trie{
+ private:Node*root;
+ public:
+  //constructor
+  Trie(){
+      root=new Node();
+  }
+  //insert function
+  void insert(string word){
+      Node * node=root;
+      for(int i=0;i<word.size();i++){
+          if(!node->containskey(word[i])){
+              node->put(word[i],new Node());
+          }
+          node=node->get(word[i]);
+      }
+      node->setend();
+  }
+  bool checkifallprefixexists(string word){
+     Node*node=root;
+    //bool flg=true;
+     for(int i=0;i<word.size();i++){
+          if(node->containskey(word[i])){
+            node=node->get(word[i]);
+           // flg=flg&node->isend();
+            if(node->isend()==false){//end agya aur flag false
+              return false;
+            }
+            
+          }
+          else return false; 
+      }
+      return true;
+  }
+};
+string completeString(int n, vector<string> &a){
+    //Trie trie;//new object creati
+    Trie* trie=new Trie();
+    for(auto word : a){
+        trie->insert(word);
+    }
+    string longest="";
+    for(auto word:a){
+        if(trie->checkifallprefixexists(word)){
+            if(word.size()>longest.size()){
+               longest=word;
+            }
+            else if(word.size()==longest.size()&&word<longest){
+                //lexicographically smaller
+                longest=word;
+            }
+        }
+    }
+    if(longest=="") return "None";
+    return longest;
+    
+
+}
