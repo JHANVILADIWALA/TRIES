@@ -1,0 +1,37 @@
+//// https://www.codingninjas.com/codestudio/problems/count-distinct-substrings_985292?utm_source=youtube&utm_medium=affiliate&utm_campaign=striver_tries_videos&leftPanelTab=1
+
+struct Node{
+   Node*links[26];
+///trie only contains links, flg is of no use
+   bool containskey(char ch){
+       return (links[ch-'a']!=NULL);
+   }
+   Node*get(char ch){
+       return links[ch-'a'];
+   }
+   void put(char ch, Node*node){
+       links[ch-'a']=node;
+   }
+};
+int countDistinctSubstrings(string &s)
+{
+    int ckt=0;
+    Node*root=new Node();//declare root
+    int n=s.size();
+    for(int i=0;i<s.size();i++){
+        Node*node=root;//node is initially equal to root
+        //hr baar i wala element will become root
+        for(int j=i;j<n;j++){
+            //agr contain nhi krta to insert and increment then move fwd
+            if(!node->containskey(s[j])){
+                ckt++;
+                node->put(s[j],new Node());
+            }
+            //else directly move fwd
+            node=node->get(s[j]);
+        }
+    }
+    //return ckt+1
+    //+1 is for empty string
+    return ckt+1;
+}
