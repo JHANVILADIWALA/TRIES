@@ -1,0 +1,88 @@
+//  https://www.codingninjas.com/codestudio/problems/max-xor-queries_1382020?utm_source=youtube&utm_medium=affiliate&utm_campaign=striver_tries_videos&leftPanelTab=1
+
+#include<bits/stdc++.h>
+
+struct Node{
+  Node*links[2];
+
+  bool containskey(int bit){
+      return (links[bit]!=NULL);
+  }
+  void put(int bit,Node*node){
+      links[bit]=node;
+  }
+  Node*get( int bit ){
+      return links[bit];
+  }
+};
+class Trie{
+    private: Node*root;
+    public:
+      Trie(){
+          root=new Node();
+      }
+    public: //insert and getmax function
+     void insert(int num){
+         Node * node=root;
+         for (int i = 31; i >= 0; i--) { // kyuki starting se insert krna h
+           // for 32 bits
+           int bit = (num >> i) & 1;
+           if (!node->containskey(bit))
+            { 
+                node->put(bit, new Node());
+            } 
+            node = node->get(bit);
+         }
+     }	
+
+   public:
+     int findmax(int num){//return krega max value of that num with a number in array
+      int maxval=0;
+      Node*node=root;
+      for(int i=31;i>=0;i--){
+          int bit=(num>>i)&1;
+          //bit tells the val is 0 or 1
+          if(node->containskey(1-bit)){//contains opposite
+            maxval=maxval|(1<<i);//max val ki vo bit set krdenge
+            //left shift 1 i times
+            node=node->get(!bit);
+            //uske opposite ke hi ref trie pe chl jao
+          }
+          else{//doesnt contain->>seedha chl jao next pe USKE HI
+            node=node->get(bit);
+          }
+      }
+      return maxval;
+
+    }
+};
+
+vector<int> maxXorQueries(vector<int> &arr, vector<vector<int>> &queries){
+	vector<int>ans(queries.size(),0);
+	
+    vector<pair< int, pair<int,int> > >oq;
+	int q=queries.size();
+	sort(arr.begin(), arr.end()); //sort the array
+	for(int i=0;i<q;i++){
+		oq.push_back({ queries[i][1] , { queries[i][0] ,  i }});
+ // will sort on ai basis        ai          xi          ind
+	} //ai is kept first so that easy to sort on basis of ai
+	sort(oq.begin(),oq.end());//sort oq on basis of ai
+    
+	Trie trie;
+	int ind=0;
+	int n=arr.size();
+	for(int i=0;i<q;i++){
+		int ai=oq[i].first;
+		int xi=oq[i].second.first;
+		int qind=oq[i].second.second;
+
+		while(ind<n && arr[ind]<=ai){//add that element to trie
+			trie.insert(arr[ind]);
+			ind++;
+		}//overall runs n time 
+		if(ind==0) ans[qind]=-1;
+		else ans[qind]=trie.findmax(xi);
+	}
+  return ans;
+}
